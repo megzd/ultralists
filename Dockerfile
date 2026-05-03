@@ -1,16 +1,18 @@
 FROM python:3.14-slim
-# creates /venv directory
-RUN python -m venv /venv
-ENV PATH="/venv/bin:$PATH"
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-RUN pip install "django==6" gunicorn whitenoise
+WORKDIR /goat-book
 
-COPY src /src
+COPY uv.lock pyproject.toml ./
+RUN uv sync --frozen --no-install-project --no-dev
 
-# cd equivalent
-WORKDIR /src
+ENV PATH="/goat-book/.venv/bin:$PATH"
+
+COPY src ./src
 
 # this tells Django to accept connections from any network interface
 # CMD ["python", "manage.py", "runserver", "0.0.0.0:8888"]
+
+WORKDIR /goat-book/src
 
 CMD ["gunicorn", "--bind", ":8888", "superlists.wsgi:application"]
