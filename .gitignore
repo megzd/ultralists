@@ -11,5 +11,6 @@ wheels/
 
 # Other
 db.sqlite3
+container.db.sqlite3
 src/static
 todo.md

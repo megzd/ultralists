@@ -35,10 +35,12 @@ if "DJANGO_DEBUG_FALSE" in os.environ:
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
     # required when disabling debug mode
     ALLOWED_HOSTS = [os.environ["DJANGO_ALLOWED_HOST"]]
+    db_path = os.environ["DJANGO_DB_PATH"]
 else:
     DEBUG = True
     SECRET_KEY = 'django-insecure-otnk7qhm_9_jqlee0)t-o8^eb(h%wnf$a_a+he@_8+^vdlq&b2'
     ALLOWED_HOSTS = []
+    db_path = BASE_DIR / 'db.sqlite3',
 
 
 # Application definition
@@ -90,7 +92,7 @@ WSGI_APPLICATION = 'superlists.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': db_path
     }
 }
 

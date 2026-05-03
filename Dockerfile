@@ -16,8 +16,11 @@ COPY src ./src
 WORKDIR /goat-book/src
 
 # required with debug turned off
-RUN python manage.py collectstatic
+RUN python manage.py collectstatic --no-input
 
 ENV DJANGO_DEBUG_FALSE=1
+
+RUN adduser --uid 1234 nonroot
+USER nonroot
 
 CMD ["gunicorn", "--bind", ":8888", "superlists.wsgi:application"]
