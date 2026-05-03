@@ -11,5 +11,5 @@ wheels/
 
 # Other
 db.sqlite3
-/static
+src/static
 todo.md
