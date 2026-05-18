@@ -1,4 +1,5 @@
 FROM python:3.14-slim
+
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /goat-book
@@ -19,8 +20,9 @@ WORKDIR /goat-book/src
 RUN python manage.py collectstatic --no-input
 
 ENV DJANGO_DEBUG_FALSE=1
+ENV DJANGO_DB_PATH=/home/nonrootuser/db.sqlite3
 
-RUN adduser --uid 1234 nonroot
-USER nonroot
+RUN adduser --uid 1234 nonrootuser
+USER nonrootuser
 
 CMD ["gunicorn", "--bind", ":8888", "superlists.wsgi:application"]

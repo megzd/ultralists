@@ -12,7 +12,9 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "ansible>=13.6.0",
     "cssselect>=1.4.0",
+    "docker>=7.1.0",
     "lxml>=6.1.0",
     "selenium>=4.43.0",
 ]

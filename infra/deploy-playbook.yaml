@@ -1,0 +1,89 @@
+# requires -K flag for some privileged local operations
+
+- hosts: all
+  tasks:
+    - name: install docker
+      ansible.builtin.apt:
+        name: docker.io # package name
+        state: latest
+        update_cache: true # required on a fresh server
+      become: true
+
+# -----------------------------------------------------------
+
+    - name: build image locally
+      community.docker.docker_image:
+        name: superlists
+        source: build
+        state: present
+        build:
+          path: .. # outside the infra/ directory
+          platform: linux/amd64
+        force_source: true # even if the image already exists
+      delegate_to: 127.0.0.1 # run the command locally
+      become: true
+
+    - name: export container
+      community.docker.docker_image:
+        name: superlists
+        archive_path: /tmp/superlists-img.tar
+        source: local
+      delegate_to: 127.0.0.1 # run the command locally
+      become: true
+
+    - name: upload container
+      ansible.builtin.copy:
+        src: /tmp/superlists-img.tar
+        dest: /tmp/superlists-img.tar
+
+    - name: import container
+      community.docker.docker_image:
+        name: superlists
+        load_path: /tmp/superlists-img.tar
+        source: load
+        force_source: true # even if the image already exists
+        state: present
+      become: true
+
+# -----------------------------------------------------------
+
+    - name: make secret-key file
+      ansible.builtin.copy:
+        dest: ~/.secret-key
+        content: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters') }}"
+        mode: 0600
+        force: false # ignore if it already exists
+
+    - name: read secret-key file
+      ansible.builtin.slurp:
+        src: ~/.secret-key
+      register: secret_key
+
+    - name: prepare database
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/db.sqlite3"
+        state: touch
+        owner: 1234 # container nonrootuser ID
+      become: true
+
+    - name: run container
+      community.docker.docker_container:
+        name: superlists
+        image: superlists
+        state: started
+        recreate: true # even if the container is running
+        env:
+          DJANGO_ALLOWED_HOST: "{{ inventory_hostname }}" # the hostname we're connecting to
+          DJANGO_SECRET_KEY: "{{ secret_key.content | b64decode }}" # slurp returns base64 encoding
+        mounts:
+          - type: bind
+            source: "{{ ansible_facts['user_dir'] }}/db.sqlite3"
+            target: "/home/nonrootuser/db.sqlite3"
+        ports: 80:8888
+      become: true
+
+    - name: run migration
+      community.docker.docker_container_exec:
+        container: superlists
+        command: ./manage.py migrate
+      become: true
