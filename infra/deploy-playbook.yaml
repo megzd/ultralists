@@ -13,7 +13,7 @@
 
     - name: build image locally
       community.docker.docker_image:
-        name: superlists
+        name: ultralists
         source: build
         state: present
         build:
@@ -25,21 +25,21 @@
 
     - name: export container
       community.docker.docker_image:
-        name: superlists
-        archive_path: /tmp/superlists-img.tar
+        name: ultralists
+        archive_path: /tmp/ultralists-img.tar
         source: local
       delegate_to: 127.0.0.1 # run the command locally
       become: true
 
     - name: upload container
       ansible.builtin.copy:
-        src: /tmp/superlists-img.tar
-        dest: /tmp/superlists-img.tar
+        src: /tmp/ultralists-img.tar
+        dest: /tmp/ultralists-img.tar
 
     - name: import container
       community.docker.docker_image:
-        name: superlists
-        load_path: /tmp/superlists-img.tar
+        name: ultralists
+        load_path: /tmp/ultralists-img.tar
         source: load
         force_source: true # even if the image already exists
         state: present
@@ -68,8 +68,8 @@
 
     - name: run container
       community.docker.docker_container:
-        name: superlists
-        image: superlists
+        name: ultralists
+        image: ultralists
         state: started
         recreate: true # even if the container is running
         env:
@@ -84,6 +84,6 @@
 
     - name: run migration
       community.docker.docker_container_exec:
-        container: superlists
+        container: ultralists
         command: ./manage.py migrate
       become: true

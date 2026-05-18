@@ -2,19 +2,19 @@ FROM python:3.14-slim
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-WORKDIR /goat-book
+WORKDIR /ultralists
 
 COPY uv.lock pyproject.toml ./
 RUN uv sync --frozen --no-install-project --no-dev
 
-ENV PATH="/goat-book/.venv/bin:$PATH"
+ENV PATH="/ultralists/.venv/bin:$PATH"
 
 COPY src ./src
 
 # this tells Django to accept connections from any network interface
 # CMD ["python", "manage.py", "runserver", "0.0.0.0:8888"]
 
-WORKDIR /goat-book/src
+WORKDIR /ultralists/src
 
 # required with debug turned off
 RUN python manage.py collectstatic --no-input
@@ -25,4 +25,4 @@ ENV DJANGO_DB_PATH=/home/nonrootuser/db.sqlite3
 RUN adduser --uid 1234 nonrootuser
 USER nonrootuser
 
-CMD ["gunicorn", "--bind", ":8888", "superlists.wsgi:application"]
+CMD ["gunicorn", "--bind", ":8888", "ultralists.wsgi:application"]
