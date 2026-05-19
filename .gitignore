@@ -9,8 +9,7 @@ wheels/
 # Virtual environments
 .venv
 
-# Other
-db.sqlite3
-container.db.sqlite3
-src/static
+# ----------------------
+data/
+staticfiles/
 todo.md

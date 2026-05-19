@@ -14,11 +14,11 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# __file__ → project/src/myproject/settings.py
-# └── .parent → project/src/myproject/
-#     └── .parent → project/src/
-#         └── .parent → project/
-BASE_DIR = Path(__file__).resolve().parent.parent
+# __file__ → root/src/myproject/settings.py
+# └── .parent → root/src/myproject/
+#     └── .parent → root/src/
+#         └── .parent → root/
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -40,7 +40,7 @@ else:
     DEBUG = True
     SECRET_KEY = 'django-insecure-otnk7qhm_9_jqlee0)t-o8^eb(h%wnf$a_a+he@_8+^vdlq&b2'
     ALLOWED_HOSTS = []
-    db_path = BASE_DIR / 'db.sqlite3',
+    db_path = BASE_DIR / 'data' / 'db.sqlite3',
 
 
 # Application definition
@@ -131,8 +131,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
+# collectstatic reads all locations defined in STATICFILES_DIRS
+# and in the static/ directory of apps in INSTALLED_APPS
+
+# WhiteNoise reads the location specified by STATIC_ROOT
+# which is the same setting that tells collectstatic where to write files
+
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # basic error logging while debug mode is off

@@ -17,6 +17,7 @@ COPY src ./src
 WORKDIR /ultralists/src
 
 # required with debug turned off
+# generates staticfiles/ directory
 RUN python manage.py collectstatic --no-input
 
 ENV DJANGO_DEBUG_FALSE=1

@@ -8,7 +8,7 @@ from lists.models import List, Item
 def home_page(request):
     # returns an HTTP response object, containing a rendered HTML page and passes variables to the template
     # arguments: the HTTP request, the path to the template to render, a dictionary context data to inject into the template
-    return render(request, "home.html")
+    return render(request, "lists/home.html")
 
 # creates a unique list when the first item is added
 def create_list(request):
@@ -23,7 +23,7 @@ def create_list(request):
 # displays a list and its items
 def view_list(request, list_id):
     viewlist = List.objects.get(id=list_id)
-    return render(request, "list.html", {"list": viewlist})
+    return render(request, "lists/list.html", {"list": viewlist})
 
 # adds an item to an existing list
 def add_item(request, list_id):

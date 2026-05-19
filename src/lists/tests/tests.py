@@ -5,7 +5,7 @@ import lxml.html
 class HomePageTest(TestCase):
     def test_uses_home_template(self):
         response = self.client.get("/")
-        self.assertTemplateUsed(response, "home.html")
+        self.assertTemplateUsed(response, "lists/home.html")
 
     def test_displays_input_form(self):
         response = self.client.get("/")
@@ -36,7 +36,7 @@ class ViewListTest(TestCase):
         my_list = List.objects.create()
 
         response = self.client.get(f"/lists/{my_list.id}/")
-        self.assertTemplateUsed(response, "list.html")
+        self.assertTemplateUsed(response, "lists/list.html")
 
     def test_displays_input_form(self):
         my_list = List.objects.create()
