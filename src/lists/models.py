@@ -1,7 +1,7 @@
 from django.db import models
 
-# models are blueprints for creating empty tables
-# migrations are the tables created from these blueprints
+# models are class blueprints that define empty tables
+# migration files construct the tables from these blueprints
 # an attribute in a model class represents a column in that table
 # an object of a model class represents a row entry in that table
 

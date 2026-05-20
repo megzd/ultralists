@@ -32,10 +32,10 @@ class NewVisitorTest(StaticLiveServerTestCase):
                 time.sleep(0.5)
 
     def test_starting_a_todo_list(self):
-        # user opens the website
+        # user opens website
         self.browser.get(self.live_server_url)
         
-        # he sees the tab title and a header
+        # he sees tab title and a header
         self.assertIn("To-Do", self.browser.title)
         header_text = self.browser.find_element(By.TAG_NAME, "h1").text
         self.assertIn("To-Do", header_text)
@@ -45,10 +45,10 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element(By.ID, "id_new_item")
         self.assertEqual(inputbox.get_attribute("placeholder"), "Enter a to-do item")
 
-        # he types into the text box and hits enter
+        # he types into text box and hits enter
         inputbox.send_keys("Buy eggs and milk")
         inputbox.send_keys(Keys.ENTER)
-        # the page updates and now he sees his new to-do item
+        # page updates and now he sees his new to-do item
         self.wait_for_row_in_table("1: Buy eggs and milk")
 
         # SECOND ITEM
@@ -56,15 +56,15 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element(By.ID, "id_new_item")
         self.assertEqual(inputbox.get_attribute("placeholder"), "Enter a to-do item")
 
-        # he types into the text box and hits enter
+        # he types into text box and hits enter
         inputbox.send_keys("Buy cheese and bread")
         inputbox.send_keys(Keys.ENTER)
-        # the page updates and now he sees both his to-do items
+        # page updates and now he sees both his to-do items
         self.wait_for_row_in_table("2: Buy cheese and bread")
         self.wait_for_row_in_table("1: Buy eggs and milk")
 
     def test_multiple_users_and_lists(self):
-        # user 1 opens the website
+        # user 1 opens website
         self.browser.get(self.live_server_url)
         # he creates a new to-do item
         inputbox = self.browser.find_element(By.ID, "id_new_item")
@@ -77,7 +77,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         first_user_url = self.browser.current_url
         self.assertRegex(first_user_url, "/lists/.+")
 
-        # user 2 opens the website
+        # user 2 opens website
         self.browser.get(self.live_server_url)
         # he doesn't see user 1's list
         page_text = self.browser.find_element(By.TAG_NAME, "body").text
@@ -103,12 +103,12 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertNotEqual(first_user_url, second_user_url)
     
     def test_layout_and_styling(self):
-        # user opens the website
+        # user opens website
         self.browser.get(self.live_server_url)
-        # he resizes the window
+        # he resizes browser window
         self.browser.set_window_size(1024, 768)
 
-        # he sees the text box at the center
+        # he sees text box positioned at center
         inputbox = self.browser.find_element(By.ID, "id_new_item")
         self.assertAlmostEqual(
             inputbox.location["x"] + (inputbox.size["width"] / 2),
@@ -121,7 +121,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_in_table("1: testing")
         
-        # he still sees the text box at the center
+        # he still sees text box positioned at center
         inputbox = self.browser.find_element(By.ID, "id_new_item")
         self.assertAlmostEqual(
             inputbox.location["x"] + inputbox.size["width"] / 2,

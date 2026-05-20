@@ -1,5 +1,4 @@
 FROM python:3.14-slim
-
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /ultralists
@@ -9,12 +8,11 @@ RUN uv sync --frozen --no-install-project --no-dev
 
 ENV PATH="/ultralists/.venv/bin:$PATH"
 
-COPY src ./src
+COPY src/ ./src/
+WORKDIR /ultralists/src
 
 # this tells Django to accept connections from any network interface
 # CMD ["python", "manage.py", "runserver", "0.0.0.0:8888"]
-
-WORKDIR /ultralists/src
 
 # required with debug turned off
 # generates staticfiles/ directory
@@ -23,6 +21,7 @@ RUN python manage.py collectstatic --no-input
 ENV DJANGO_DEBUG_FALSE=1
 ENV DJANGO_DB_PATH=/home/nonrootuser/db.sqlite3
 
+# owner of the database file
 RUN adduser --uid 1234 nonrootuser
 USER nonrootuser
 

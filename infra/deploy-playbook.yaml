@@ -2,41 +2,41 @@
 
 - hosts: all
   tasks:
-    - name: install docker
+    - name: install docker on the server
       ansible.builtin.apt:
         name: docker.io # package name
         state: latest
-        update_cache: true # required on a fresh server
+        update_cache: true # run "apt-get update" first
       become: true
 
 # -----------------------------------------------------------
 
-    - name: build image locally
+    - name: build the image locally
       community.docker.docker_image:
         name: ultralists
         source: build
         state: present
         build:
-          path: .. # outside the infra/ directory
+          path: .. # dockerfile is outside the infra/ directory
           platform: linux/amd64
         force_source: true # even if the image already exists
-      delegate_to: 127.0.0.1 # run the command locally
+      delegate_to: 127.0.0.1 # run the command on the local machine
       become: true
 
-    - name: export container
+    - name: export the image as an archive
       community.docker.docker_image:
         name: ultralists
         archive_path: /tmp/ultralists-img.tar
         source: local
-      delegate_to: 127.0.0.1 # run the command locally
+      delegate_to: 127.0.0.1 # run the command on the local machine
       become: true
 
-    - name: upload container
+    - name: upload the image to the server
       ansible.builtin.copy:
         src: /tmp/ultralists-img.tar
         dest: /tmp/ultralists-img.tar
 
-    - name: import container
+    - name: import the image into docker
       community.docker.docker_image:
         name: ultralists
         load_path: /tmp/ultralists-img.tar
@@ -47,23 +47,23 @@
 
 # -----------------------------------------------------------
 
-    - name: make secret-key file
+    - name: create missing secret-key file
       ansible.builtin.copy:
         dest: ~/.secret-key
         content: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters') }}"
         mode: 0600
         force: false # ignore if it already exists
 
-    - name: read secret-key file
+    - name: read the secret-key file
       ansible.builtin.slurp:
         src: ~/.secret-key
       register: secret_key
 
-    - name: prepare database
+    - name: create missing sqlite database
       ansible.builtin.file:
         path: "{{ ansible_facts['user_dir'] }}/db.sqlite3"
-        state: touch
-        owner: 1234 # container nonrootuser ID
+        state: touch # ignore if it already exists
+        owner: 1234 # container nonrootuser user-id
       become: true
 
     - name: run container
@@ -71,7 +71,7 @@
         name: ultralists
         image: ultralists
         state: started
-        recreate: true # even if the container is running
+        recreate: true # even if a container is running
         env:
           DJANGO_ALLOWED_HOST: "{{ inventory_hostname }}" # the hostname we're connecting to
           DJANGO_SECRET_KEY: "{{ secret_key.content | b64decode }}" # slurp returns base64 encoding
