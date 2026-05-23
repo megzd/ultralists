@@ -15,9 +15,10 @@ def home_page(request):
 # creates a unique list when the first item is added
 def create_list(request):
     createlist = List.objects.create()
-    # POST[] accesses the dictionary-like data within the POST's body
-    new_item = Item.objects.create(text=request.POST["item_text"], list=createlist)
+
     try:
+        # POST[] accesses the dictionary-like data within the POST's body
+        new_item = Item.objects.create(text=request.POST["item_text"], list=createlist)
         new_item.full_clean()
         new_item.save()
     except ValidationError:
@@ -35,8 +36,13 @@ def user_list(request, list_id):
     userlist = List.objects.get(id=list_id)
 
     if request.method == "POST":
-        Item.objects.create(text=request.POST["item_text"], list=userlist)
-        # redirects to user_list
-        return redirect(f"/lists/{userlist.id}/")
+        try:
+            new_item = Item(text=request.POST["item_text"], list=userlist)
+            new_item.full_clean()
+            new_item.save()
+            return redirect(f"/lists/{userlist.id}/")
+        except ValidationError:
+            error = "You can't have an empty list item"
+            return render(request, "lists/list.html", {"list": userlist, "error": error})
 
     return render(request, "lists/list.html", {"list": userlist})

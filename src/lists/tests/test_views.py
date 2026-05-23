@@ -51,13 +51,12 @@ class CreateListTest(TestCase):
 class UserListTest(TestCase):
     def test_uses_list_template(self):
         my_list = List.objects.create()
-
         response = self.client.get(f"/lists/{my_list.id}/")
+        
         self.assertTemplateUsed(response, "lists/list.html")
 
     def test_displays_input_form(self):
         my_list = List.objects.create()
-
         response = self.client.get(f"/lists/{my_list.id}/")
         parsed = lxml.html.fromstring(response.content)
 
@@ -103,3 +102,19 @@ class UserListTest(TestCase):
             data={"item_text": "new to-do item"}
         )
         self.assertRedirects(response, f"/lists/{correct_list.id}/")
+
+    def test_handles_validation_errors(self):
+        my_list = List.objects.create()
+        response = self.client.post(f"/lists/{my_list.id}/", data={"item_text": ""})
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "lists/list.html")
+
+        expected_error = html.escape("You can't have an empty list item")
+        self.assertContains(response, expected_error)
+
+    def test_invalid_items_are_discarded(self):
+        my_list = List.objects.create()
+        self.client.post(f"/lists/{my_list.id}/", data={"item_text": ""})
+
+        self.assertEqual(Item.objects.count(), 0)

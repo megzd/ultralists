@@ -19,8 +19,6 @@ class ItemValidationTest(FunctionalTest):
                 "You can't have an empty list item"
             )
         )
-
-        return # TODO: implement the rest
     
         # he creates a new to-do item
         inputbox = self.browser.find_element(By.ID, "id_new_item")
