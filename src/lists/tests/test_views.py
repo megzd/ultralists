@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import html
 import lxml.html
 
 from lists.models import List, Item
@@ -31,6 +32,21 @@ class CreateListTest(TestCase):
 
         my_list = List.objects.get()
         self.assertRedirects(response, f"/lists/{my_list.id}/")
+
+    def test_handles_validation_errors(self):
+        response = self.client.post("/lists/create", data={"item_text": ""})
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "lists/home.html")
+
+        expected_error = html.escape("You can't have an empty list item")
+        self.assertContains(response, expected_error)
+
+    def test_invalid_items_are_discarded(self):
+        self.client.post("/lists/create", data={"item_text": ""})
+
+        self.assertEqual(List.objects.count(), 0)
+        self.assertEqual(Item.objects.count(), 0)
 
 class ViewListTest(TestCase):
     def test_uses_list_template(self):

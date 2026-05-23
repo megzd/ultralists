@@ -1,4 +1,6 @@
 from django.test import TestCase
+from django.db.utils import IntegrityError
+from django.core.exceptions import ValidationError
 
 from lists.models import List, Item
 
@@ -30,3 +32,29 @@ class ModelsTest(TestCase):
         self.assertEqual(first_saved_item.list, my_list)
         self.assertEqual(second_saved_item.text, "to-do item 2")
         self.assertEqual(second_saved_item.list, my_list)
+
+    def test_rejects_new_null_items(self):
+        my_list = List()
+        my_list.save()
+
+        # database-level validation
+        # by default in TextField(), database doesn't accept None value (NOT NULL constraint)
+        new_item = Item(list=my_list, text=None)
+
+        # testing that incorrect behaivor raises an error
+        # the testing would continue after an error due to with statement
+        # but assertRaises() itself would fail if no error is raised
+        with self.assertRaises(IntegrityError):
+            new_item.save()
+
+    def test_rejects_new_empty_items(self):
+        my_list = List()
+        my_list.save()
+
+        new_item = Item(list=my_list, text="")
+
+        # model-level validation
+        # by default in TextField(), django doesn't accept empty string (blank=False attribute)
+        with self.assertRaises(ValidationError):
+            # django models don’t run full validation on save
+            new_item.full_clean()
