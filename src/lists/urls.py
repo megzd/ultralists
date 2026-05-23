@@ -21,6 +21,5 @@ urlpatterns = [
     # when a request is recieved, check the matching URL pattern and call its view function
     # arguments: the URL, the view function, an alias to reference the URL
     path("create", views.create_list, name="create_list"),
-    path("<int:list_id>/", views.view_list, name="view_list"),
-    path("<int:list_id>/add_item", views.add_item, name="add_item")
+    path("<int:list_id>/", views.user_list, name="user_list"),
 ]

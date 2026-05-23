@@ -27,17 +27,16 @@ def create_list(request):
 
     # returns an HTTP response redirect object
     # arguments: the URL (or its name), the URL's arguments
-    # redirects to view_list
+    # redirects to user_list
     return redirect(f"/lists/{createlist.id}/")
 
 # displays a list and its items
-def view_list(request, list_id):
-    viewlist = List.objects.get(id=list_id)
-    return render(request, "lists/list.html", {"list": viewlist})
+def user_list(request, list_id):
+    userlist = List.objects.get(id=list_id)
 
-# adds an item to an existing list
-def add_item(request, list_id):
-    viewlist = List.objects.get(id=list_id)
-    Item.objects.create(text=request.POST["item_text"], list=viewlist)
-    # redirects to view_list
-    return redirect(f"/lists/{viewlist.id}/")
+    if request.method == "POST":
+        Item.objects.create(text=request.POST["item_text"], list=userlist)
+        # redirects to user_list
+        return redirect(f"/lists/{userlist.id}/")
+
+    return render(request, "lists/list.html", {"list": userlist})
