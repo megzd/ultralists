@@ -29,7 +29,7 @@ def create_list(request):
     # returns an HTTP response redirect object
     # arguments: the URL (or its name), the URL's arguments
     # redirects to user_list
-    return redirect(f"/lists/{createlist.id}/")
+    return redirect(createlist)
 
 # displays a list and its items
 def user_list(request, list_id):
@@ -40,7 +40,7 @@ def user_list(request, list_id):
             new_item = Item(text=request.POST["item_text"], list=userlist)
             new_item.full_clean()
             new_item.save()
-            return redirect(f"/lists/{userlist.id}/")
+            return redirect(userlist)
         except ValidationError:
             error = "You can't have an empty list item"
             return render(request, "lists/list.html", {"list": userlist, "error": error})

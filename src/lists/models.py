@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # models are class blueprints that define empty tables
 # migration files construct the tables from these blueprints
@@ -6,7 +7,9 @@ from django.db import models
 # an object of a model class represents a row entry in that table
 
 class List(models.Model):
-    pass
+    def get_absolute_url(self):
+        return reverse("user_list", args=[self.id])
+
 
 class Item(models.Model):
     # creates a new column with a default value of an empty string
