@@ -40,7 +40,7 @@ else:
     DEBUG = True
     SECRET_KEY = 'django-insecure-otnk7qhm_9_jqlee0)t-o8^eb(h%wnf$a_a+he@_8+^vdlq&b2'
     ALLOWED_HOSTS = []
-    db_path = BASE_DIR / 'data' / 'db.sqlite3',
+    db_path = BASE_DIR / 'data' / 'db.sqlite3'
 
 
 # Application definition
