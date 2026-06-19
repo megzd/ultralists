@@ -18,11 +18,11 @@
                 
                     <form method="POST" action="{% block form_action %}{% endblock %}">
                         <!-- name="" represents the key in a dictionary-like data within the POST's body -->
-                        <input class="form-control form-control-lg {% if error %}is-invalid{% endif %}" name="item_text" id="id_new_item" placeholder="Enter a to-do item"/>
+                        {{ form.text }}
                         {% csrf_token %}
                         
-                        {% if error %}
-                            <div class="invalid-feedback">{{ error }}</div>
+                        {% if form.errors %}
+                            <div class="invalid-feedback">{{ form.errors.text }}</div>
                         {% endif %}
                     </form>
                 </div>

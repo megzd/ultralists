@@ -9,37 +9,38 @@ class ItemValidationTest(FunctionalTest):
         self.browser.get(self.live_server_url)
         
         # he accidentally submits an empty to-do item
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         inputbox.send_keys(Keys.ENTER)
 
         # home page updages and an error is displayed
         self.wait_for(
-            lambda: self.assertEqual(
-                self.browser.find_element(By.CSS_SELECTOR, ".invalid-feedback").text,
-                "You can't have an empty list item"
-            )
+            lambda: self.browser.find_element(By.CSS_SELECTOR, "#id_text:invalid")
         )
     
         # he creates a new to-do item
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         inputbox.send_keys("Buy eggs and milk")
+        self.wait_for(
+            lambda: self.browser.find_element(By.CSS_SELECTOR, "#id_text:valid")
+        )
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_item_in_list("1: Buy eggs and milk")
 
         # he accidentally submits an empty to-do item again
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         inputbox.send_keys(Keys.ENTER)
 
         # list page updages and an error is displayed
+        self.wait_for_item_in_list("1: Buy eggs and milk")
         self.wait_for(
-            lambda: self.assertEqual(
-                self.browser.find_element(By.CSS_SELECTOR, ".invalid-feedback").text,
-                "You can't have an empty list item"
-            )
+            lambda: self.browser.find_element(By.CSS_SELECTOR, "#id_text:invalid")
         )
 
         # he creates a new to-do item
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         inputbox.send_keys("Buy cheese and bread")
+        self.wait_for(
+            lambda: self.browser.find_element(By.CSS_SELECTOR, "#id_text:valid")
+        )
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_item_in_list("2: Buy cheese and bread")

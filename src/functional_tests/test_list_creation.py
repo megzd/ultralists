@@ -15,7 +15,7 @@ class ListCreationTest(FunctionalTest):
 
         # FIRST ITEM
         # he is invited to enter a to-do item
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         self.assertEqual(inputbox.get_attribute("placeholder"), "Enter a to-do item")
 
         # he types into text box and hits enter
@@ -26,7 +26,7 @@ class ListCreationTest(FunctionalTest):
 
         # SECOND ITEM
         # he is invited to enter a to-do item again
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         self.assertEqual(inputbox.get_attribute("placeholder"), "Enter a to-do item")
 
         # he types into text box and hits enter
@@ -40,7 +40,7 @@ class ListCreationTest(FunctionalTest):
         # user 1 opens website
         self.browser.get(self.live_server_url)
         # he creates a new to-do item
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         inputbox.send_keys("Buy eggs and milk")
         inputbox.send_keys(Keys.ENTER)
         # he sees his new to-do item
@@ -57,7 +57,7 @@ class ListCreationTest(FunctionalTest):
         self.assertNotIn("Buy eggs and milk", page_text)
         
         # he creates a new to-do item
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox = self.get_item_input_box()
         inputbox.send_keys("Buy cheese and bread")
         inputbox.send_keys(Keys.ENTER)
         # he sees his new to-do item

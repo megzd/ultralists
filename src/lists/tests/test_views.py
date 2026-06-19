@@ -4,6 +4,7 @@ from django.urls import reverse
 import lxml.html
 
 from lists.models import List, Item
+from lists.forms import EMPTY_ITEM_ERROR
 
 class HomePageTest(TestCase):
     def test_uses_home_template(self):
@@ -18,33 +19,35 @@ class HomePageTest(TestCase):
         self.assertEqual(form.get("action"), reverse("create_list"))
 
         inputs = form.cssselect("input")
-        self.assertIn("item_text", [input.get("name") for input in inputs])
+        self.assertIn("text", [input.get("name") for input in inputs])
 
 class CreateListTest(TestCase):
     def test_saves_post_requests(self):
-        self.client.post(reverse("create_list"), data={"item_text": "new to-do item"})
+        self.client.post(reverse("create_list"), data={"text": "new to-do item"})
         self.assertEqual(Item.objects.count(), 1)
 
         new_item = Item.objects.get()
         self.assertEqual(new_item.text, "new to-do item")
 
     def test_redirects_to_user_list(self):
-        response = self.client.post(reverse("create_list"), data={"item_text": "new to-do item"})
+        response = self.client.post(reverse("create_list"), data={"text": "new to-do item"})
 
         my_list = List.objects.get()
         self.assertRedirects(response, my_list.get_absolute_url())
 
-    def test_handles_validation_errors(self):
-        response = self.client.post(reverse("create_list"), data={"item_text": ""})
-        
+    def test_invalid_input_renders_home_template(self):
+        response = self.client.post(reverse("create_list"), data={"text": ""})
+
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "lists/home.html")
 
-        expected_error = html.escape("You can't have an empty list item")
-        self.assertContains(response, expected_error)
+    def test_invalid_input_displays_error(self):
+        response = self.client.post(reverse("create_list"), data={"text": ""})
+
+        self.assertContains(response, html.escape(EMPTY_ITEM_ERROR))
 
     def test_invalid_items_are_discarded(self):
-        self.client.post(reverse("create_list"), data={"item_text": ""})
+        self.client.post(reverse("create_list"), data={"text": ""})
 
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)
@@ -53,7 +56,7 @@ class UserListTest(TestCase):
     def test_uses_list_template(self):
         my_list = List.objects.create()
         response = self.client.get(my_list.get_absolute_url())
-        
+
         self.assertTemplateUsed(response, "lists/list.html")
 
     def test_displays_input_form(self):
@@ -65,7 +68,7 @@ class UserListTest(TestCase):
         self.assertEqual(form.get("action"), my_list.get_absolute_url())
 
         inputs = form.cssselect("input")
-        self.assertIn("item_text", [input.get("name") for input in inputs])
+        self.assertIn("text", [input.get("name") for input in inputs])
 
     def test_displays_list_items(self):
         first_list = List.objects.create()
@@ -86,7 +89,7 @@ class UserListTest(TestCase):
 
         self.client.post(
             correct_list.get_absolute_url(),
-            data={"item_text": "new to-do item"}
+            data={"text": "new to-do item"}
         )
         self.assertEqual(Item.objects.count(), 1)
 
@@ -100,22 +103,25 @@ class UserListTest(TestCase):
 
         response = self.client.post(
             correct_list.get_absolute_url(),
-            data={"item_text": "new to-do item"}
+            data={"text": "new to-do item"}
         )
         self.assertRedirects(response, correct_list.get_absolute_url())
 
-    def test_handles_validation_errors(self):
+    def test_invalid_input_renders_list_template(self):
         my_list = List.objects.create()
-        response = self.client.post(my_list.get_absolute_url(), data={"item_text": ""})
-        
+        response = self.client.post(my_list.get_absolute_url(), data={"text": ""})
+
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "lists/list.html")
 
-        expected_error = html.escape("You can't have an empty list item")
-        self.assertContains(response, expected_error)
+    def test_invalid_input_displays_error(self):
+        my_list = List.objects.create()
+        response = self.client.post(my_list.get_absolute_url(), data={"text": ""})
+
+        self.assertContains(response, html.escape(EMPTY_ITEM_ERROR))
 
     def test_invalid_items_are_discarded(self):
         my_list = List.objects.create()
-        self.client.post(my_list.get_absolute_url(), data={"item_text": ""})
+        self.client.post(my_list.get_absolute_url(), data={"text": ""})
 
         self.assertEqual(Item.objects.count(), 0)
