@@ -18,7 +18,7 @@ import os
 # └── .parent → root/src/myproject/
 #     └── .parent → root/src/
 #         └── .parent → root/
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[2]
 
 
 # Quick-start development settings - unsuitable for production
