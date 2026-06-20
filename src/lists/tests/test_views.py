@@ -4,7 +4,7 @@ from django.urls import reverse
 import lxml.html
 
 from lists.models import List, Item
-from lists.forms import EMPTY_ITEM_ERROR
+from lists.forms import EMPTY_ITEM_ERROR, DUPLICATE_ITEM_ERROR
 
 class HomePageTest(TestCase):
     def test_uses_home_template(self):
@@ -125,3 +125,24 @@ class UserListTest(TestCase):
         self.client.post(my_list.get_absolute_url(), data={"text": ""})
 
         self.assertEqual(Item.objects.count(), 0)
+
+    def test_duplicate_input_renders_list_template(self):
+        my_list = List.objects.create()
+        Item.objects.create(list=my_list, text="new to-do item") # duplicate item
+        response = self.client.post(my_list.get_absolute_url(), data={"text": "new to-do item"})
+
+        self.assertTemplateUsed(response, "lists/list.html")
+
+    def test_duplicate_input_displays_error(self):
+        my_list = List.objects.create()
+        Item.objects.create(list=my_list, text="new to-do item") # duplicate item
+        response = self.client.post(my_list.get_absolute_url(), data={"text": "new to-do item"})
+
+        self.assertContains(response, html.escape(DUPLICATE_ITEM_ERROR))
+
+    def test_duplicate_items_are_discarded(self):
+        my_list = List.objects.create()
+        Item.objects.create(list=my_list, text="new to-do item") # duplicate item
+        self.client.post(my_list.get_absolute_url(), data={"text": "new to-do item"})
+
+        self.assertEqual(Item.objects.all().count(), 1)

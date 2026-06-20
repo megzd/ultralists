@@ -56,11 +56,39 @@ class ModelsTest(TestCase):
         # model-level validation
         # by default in TextField(), django doesn't accept empty string (blank=False attribute)
         with self.assertRaises(ValidationError):
-            # django models don’t run full validation on save
+            # django models don’t run full validation on save()
             new_item.full_clean()
     
+    def test_rejects_new_duplicate_items(self):
+        my_list = List()
+        my_list.save()
+
+        first_item = Item(list=my_list, text="new to-do item")
+        first_item.save()
+
+        with self.assertRaises(ValidationError):
+            second_item = Item(list=my_list, text="new to-do item")
+            second_item.full_clean()
+
+    def test_saves_same_item_in_different_lists(self):
+        first_list = List.objects.create()
+        second_list = List.objects.create()
+
+        first_item = Item(list=first_list, text="new to-do item")
+        first_item.save()
+        second_item = Item(list=second_list, text="new to-do item")
+        second_item.full_clean() # should not raise
+
     def test_get_absolute_url_for_lists(self):
         my_list = List()
         my_list.save()
 
         self.assertEqual(my_list.get_absolute_url(), f"/lists/{my_list.id}/")
+
+    def test_item_order_in_lists(self):
+        my_list = List.objects.create()
+        first_item = Item.objects.create(list=my_list, text="3")
+        second_item = Item.objects.create(list=my_list, text="1")
+        third_item = Item.objects.create(list=my_list, text="2")
+
+        self.assertEqual(list(my_list.item_set.all()), [first_item, second_item, third_item])

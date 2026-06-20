@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.core.exceptions import ValidationError
 
 from lists.models import List, Item
-from lists.forms import ItemForm
+from lists.forms import ItemForm, ExistingListItemForm
 
 # views take requests, process data, and return responses
 # they contain the business logic and interact with models and templates
@@ -30,12 +30,12 @@ def create_list(request):
 # displays a list and its items
 def user_list(request, list_id):
     userlist = List.objects.get(id=list_id)
-    form = ItemForm()
+    form = ExistingListItemForm(for_list=userlist)
 
     if request.method == "POST":
-        form = ItemForm(data=request.POST)
+        form = ExistingListItemForm(for_list=userlist, data=request.POST)
         if form.is_valid():
-            form.save(for_list=userlist)
+            form.save()
             return redirect(userlist)
 
     return render(request, "lists/list.html", {"list": userlist, "form": form})

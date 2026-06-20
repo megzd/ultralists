@@ -16,3 +16,8 @@ class Item(models.Model):
     text = models.TextField(default="")
     # string references are best practice instead of passing the model class directly
     list = models.ForeignKey("List", default=None, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ("id",)
+        # each individual list should have unique to-do items
+        unique_together = ("list", "text")
