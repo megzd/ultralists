@@ -7,7 +7,7 @@ class ItemValidationTest(FunctionalTest):
     def test_no_empty_list_items(self):
         # user opens website
         self.browser.get(self.live_server_url)
-        
+
         # he accidentally submits an empty to-do item
         inputbox = self.get_item_input_box()
         inputbox.send_keys(Keys.ENTER)
@@ -16,7 +16,7 @@ class ItemValidationTest(FunctionalTest):
         self.wait_for(
             lambda: self.browser.find_element(By.CSS_SELECTOR, "#id_text:invalid")
         )
-    
+
         # he creates a new to-do item
         inputbox = self.get_item_input_box()
         inputbox.send_keys("Buy eggs and milk")

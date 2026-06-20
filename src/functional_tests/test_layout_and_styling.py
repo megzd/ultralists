@@ -22,7 +22,7 @@ class LayoutAndStylingTest(FunctionalTest):
         inputbox.send_keys("testing")
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_item_in_list("1: testing")
-        
+
         # he still sees text box positioned at center
         inputbox = self.get_item_input_box()
         self.assertAlmostEqual(
