@@ -79,6 +79,10 @@ class ModelsTest(TestCase):
         second_item = Item(list=second_list, text="new to-do item")
         second_item.full_clean() # should not raise
 
+    def test_item_string_representation(self):
+        new_item = Item(text="new to-do item")
+        self.assertEqual(str(new_item), "new to-do item")
+
     def test_get_absolute_url_for_lists(self):
         my_list = List()
         my_list.save()

@@ -17,6 +17,9 @@ class Item(models.Model):
     # string references are best practice instead of passing the model class directly
     list = models.ForeignKey("List", default=None, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.text
+
     class Meta:
         ordering = ("id",)
         # each individual list should have unique to-do items
