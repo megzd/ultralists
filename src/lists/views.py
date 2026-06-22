@@ -1,7 +1,6 @@
 from django.shortcuts import redirect, render
-from django.core.exceptions import ValidationError
 
-from lists.models import List, Item
+from lists.models import List
 from lists.forms import ItemForm, ExistingListItemForm
 
 # views take requests, process data, and return responses

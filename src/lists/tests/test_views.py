@@ -84,7 +84,7 @@ class UserListTest(TestCase):
         self.assertNotContains(response, "another item")
 
     def test_saves_post_requests(self):
-        another_list = List.objects.create()
+        List.objects.create() # another list
         correct_list = List.objects.create()
 
         self.client.post(
@@ -98,7 +98,7 @@ class UserListTest(TestCase):
         self.assertEqual(new_item.list, correct_list)
 
     def test_post_redirects_to_user_list(self):
-        another_list = List.objects.create()
+        List.objects.create() # another list
         correct_list = List.objects.create()
 
         response = self.client.post(
