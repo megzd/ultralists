@@ -111,6 +111,14 @@ class UserListTest(TestCase):
         my_list = List.objects.create()
         response = self.client.post(my_list.get_absolute_url(), data={"text": ""})
 
+        parsed = lxml.html.fromstring(response.content)
+        [input] = parsed.cssselect("input[name=text]")
+        self.assertIn("is-invalid", list(input.classes))
+
+    def test_empty_input_renders_list_template(self):
+        my_list = List.objects.create()
+        response = self.client.post(my_list.get_absolute_url(), data={"text": ""})
+
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "lists/list.html")
 
