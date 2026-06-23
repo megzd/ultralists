@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 from .base import FunctionalTest
+from lists.forms import DUPLICATE_ITEM_ERROR
 
 class ItemValidationTest(FunctionalTest):
     def test_no_empty_list_items(self):
@@ -65,6 +66,6 @@ class ItemValidationTest(FunctionalTest):
         self.wait_for(
             lambda: self.assertEqual(
                 self.browser.find_element(By.CSS_SELECTOR, ".invalid-feedback").text,
-                "You've already got this in your list"
+                DUPLICATE_ITEM_ERROR
             )
         )

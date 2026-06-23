@@ -6,6 +6,7 @@ class LayoutAndStylingTest(FunctionalTest):
     def test_layout_and_styling(self):
         # user opens website
         self.browser.get(self.live_server_url)
+
         # he resizes browser window
         self.browser.set_window_size(1024, 768)
 

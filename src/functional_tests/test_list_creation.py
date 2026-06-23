@@ -13,7 +13,6 @@ class ListCreationTest(FunctionalTest):
         header_text = self.browser.find_element(By.TAG_NAME, "h1").text
         self.assertIn("To-Do", header_text)
 
-        # FIRST ITEM
         # he is invited to enter a to-do item
         inputbox = self.get_item_input_box()
         self.assertEqual(inputbox.get_attribute("placeholder"), "Enter a to-do item")
@@ -21,10 +20,10 @@ class ListCreationTest(FunctionalTest):
         # he types into text box and hits enter
         inputbox.send_keys("Buy eggs and milk")
         inputbox.send_keys(Keys.ENTER)
+
         # page updates and now he sees his new to-do item
         self.wait_for_item_in_list("1: Buy eggs and milk")
 
-        # SECOND ITEM
         # he is invited to enter a to-do item again
         inputbox = self.get_item_input_box()
         self.assertEqual(inputbox.get_attribute("placeholder"), "Enter a to-do item")
@@ -32,6 +31,7 @@ class ListCreationTest(FunctionalTest):
         # he types into text box and hits enter
         inputbox.send_keys("Buy cheese and bread")
         inputbox.send_keys(Keys.ENTER)
+
         # page updates and now he sees both his to-do items
         self.wait_for_item_in_list("2: Buy cheese and bread")
         self.wait_for_item_in_list("1: Buy eggs and milk")
@@ -39,10 +39,12 @@ class ListCreationTest(FunctionalTest):
     def test_multiple_users_and_lists(self):
         # user 1 opens website
         self.browser.get(self.live_server_url)
+
         # he creates a new to-do item
         inputbox = self.get_item_input_box()
         inputbox.send_keys("Buy eggs and milk")
         inputbox.send_keys(Keys.ENTER)
+
         # he sees his new to-do item
         self.wait_for_item_in_list("1: Buy eggs and milk")
 
@@ -52,6 +54,7 @@ class ListCreationTest(FunctionalTest):
 
         # user 2 opens website
         self.browser.get(self.live_server_url)
+
         # he doesn't see user 1's list
         page_text = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertNotIn("Buy eggs and milk", page_text)
@@ -60,6 +63,7 @@ class ListCreationTest(FunctionalTest):
         inputbox = self.get_item_input_box()
         inputbox.send_keys("Buy cheese and bread")
         inputbox.send_keys(Keys.ENTER)
+
         # he sees his new to-do item
         self.wait_for_item_in_list("1: Buy cheese and bread")
 
